@@ -19,66 +19,69 @@ class AppTheme {
       ),
       textTheme: GoogleFonts.poppinsTextTheme().copyWith(
         headlineLarge: GoogleFonts.poppins(
-          fontSize: 28,
+          fontSize: 26,
+          fontWeight: FontWeight.w700,
+          color: AppColors.textPrimary,
+          letterSpacing: -0.5,
+        ),
+        headlineMedium: GoogleFonts.poppins(
+          fontSize: 20,
           fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
         ),
-        headlineMedium: GoogleFonts.poppins(
-          fontSize: 22,
-          fontWeight: FontWeight.w600,
-          color: AppColors.textPrimary,
-        ),
         headlineSmall: GoogleFonts.poppins(
-          fontSize: 18,
+          fontSize: 16,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
         titleLarge: GoogleFonts.poppins(
-          fontSize: 16,
+          fontSize: 15,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
         titleMedium: GoogleFonts.poppins(
-          fontSize: 14,
+          fontSize: 13,
           fontWeight: FontWeight.w500,
           color: AppColors.textPrimary,
         ),
         bodyLarge: GoogleFonts.poppins(
-          fontSize: 16,
+          fontSize: 15,
           fontWeight: FontWeight.w400,
           color: AppColors.textPrimary,
         ),
         bodyMedium: GoogleFonts.poppins(
-          fontSize: 14,
+          fontSize: 13,
           fontWeight: FontWeight.w400,
           color: AppColors.textSecondary,
         ),
         bodySmall: GoogleFonts.poppins(
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: FontWeight.w400,
           color: AppColors.textLight,
         ),
         labelLarge: GoogleFonts.poppins(
-          fontSize: 14,
+          fontSize: 13,
           fontWeight: FontWeight.w600,
           color: AppColors.primary,
         ),
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.cardBg,
         elevation: 0,
-        centerTitle: true,
+        scrolledUnderElevation: 1,
+        surfaceTintColor: Colors.transparent,
+        shadowColor: Colors.black.withValues(alpha: 0.08),
+        centerTitle: false,
         titleTextStyle: GoogleFonts.poppins(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
         ),
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
       ),
       cardTheme: CardThemeData(
         color: AppColors.cardBg,
-        elevation: 2,
-        shadowColor: Colors.black.withValues(alpha: 0.08),
+        elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -88,6 +91,7 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: AppColors.textOnPrimary,
+          elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -100,21 +104,24 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.cardBg,
+        fillColor: AppColors.scaffoldBg,
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 16,
+          horizontal: 16,
+          vertical: 14,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: AppColors.shimmerBase,
+            width: 1,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
         ),
         hintStyle: GoogleFonts.poppins(

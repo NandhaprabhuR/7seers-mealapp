@@ -16,15 +16,15 @@ class SectionTitle extends StatelessWidget {
     return Row(
       children: [
         Container(
-          width: 36,
-          height: 36,
+          width: 32,
+          height: 32,
           decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(10),
+            color: AppColors.primary.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon, size: 18, color: AppColors.primary),
+          child: Icon(icon, size: 16, color: AppColors.primary),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 8),
         Text(
           title,
           style: Theme.of(context).textTheme.headlineSmall,

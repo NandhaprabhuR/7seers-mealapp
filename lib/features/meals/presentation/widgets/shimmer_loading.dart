@@ -13,7 +13,7 @@ class ShimmerMealCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -22,16 +22,16 @@ class ShimmerMealCard extends StatelessWidget {
               height: 180,
               decoration: const BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(14),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    height: 16,
+                    height: 14,
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -40,8 +40,17 @@ class ShimmerMealCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Container(
-                    height: 12,
-                    width: 120,
+                    height: 10,
+                    width: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Container(
+                    height: 10,
+                    width: 160,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(4),
@@ -63,10 +72,10 @@ class ShimmerListLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: 6,
-      separatorBuilder: (_, __) => const SizedBox(height: 16),
+      itemCount: 5,
+      separatorBuilder: (_, __) => const SizedBox(height: 14),
       itemBuilder: (_, __) => const ShimmerMealCard(),
     );
   }

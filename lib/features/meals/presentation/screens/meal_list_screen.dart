@@ -18,47 +18,35 @@ class MealListScreen extends StatefulWidget {
   State<MealListScreen> createState() => _MealListScreenState();
 }
 
-class _MealListScreenState extends State<MealListScreen>
-    with SingleTickerProviderStateMixin {
+class _MealListScreenState extends State<MealListScreen> {
   final TextEditingController _searchController = TextEditingController();
-  bool _isSearchExpanded = false;
-  late AnimationController _searchAnimController;
-  late Animation<double> _searchWidthAnimation;
+  final FocusNode _searchFocus = FocusNode();
+  int _selectedCategoryIndex = 0;
+
+  static const List<String> _categories = [
+    'All',
+    'Chicken',
+    'Beef',
+    'Seafood',
+    'Pasta',
+    'Dessert',
+    'Vegetarian',
+    'Lamb',
+    'Pork',
+    'Side',
+  ];
 
   @override
   void initState() {
     super.initState();
-    _searchAnimController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 350),
-    );
-    _searchWidthAnimation = CurvedAnimation(
-      parent: _searchAnimController,
-      curve: Curves.easeOutCubic,
-    );
     context.read<MealBloc>().add(const LoadDefaultMeals());
   }
 
   @override
   void dispose() {
     _searchController.dispose();
-    _searchAnimController.dispose();
+    _searchFocus.dispose();
     super.dispose();
-  }
-
-  void _toggleSearch() {
-    setState(() {
-      _isSearchExpanded = !_isSearchExpanded;
-      if (_isSearchExpanded) {
-        _searchAnimController.forward();
-      } else {
-        _searchAnimController.reverse();
-        if (_searchController.text.isNotEmpty) {
-          _searchController.clear();
-          context.read<MealBloc>().add(const ClearSearch());
-        }
-      }
-    });
   }
 
   void _onSearchChanged(String query) {
@@ -67,15 +55,29 @@ class _MealListScreenState extends State<MealListScreen>
 
   void _clearSearch() {
     _searchController.clear();
+    _searchFocus.unfocus();
+    setState(() => _selectedCategoryIndex = 0);
     context.read<MealBloc>().add(const ClearSearch());
+  }
+
+  void _onCategoryTap(int index) {
+    setState(() => _selectedCategoryIndex = index);
+    _searchController.clear();
+    _searchFocus.unfocus();
+
+    if (index == 0) {
+      context.read<MealBloc>().add(const LoadDefaultMeals());
+    } else {
+      context.read<MealBloc>().add(SearchMeals(_categories[index]));
+    }
   }
 
   void _navigateToDetail(MealModel meal) {
     Navigator.push(
       context,
       PageRouteBuilder(
-        transitionDuration: const Duration(milliseconds: 500),
-        reverseTransitionDuration: const Duration(milliseconds: 400),
+        transitionDuration: const Duration(milliseconds: 400),
+        reverseTransitionDuration: const Duration(milliseconds: 350),
         pageBuilder: (_, __, ___) => MealDetailScreen(meal: meal),
         transitionsBuilder: (_, animation, __, child) {
           return FadeTransition(opacity: animation, child: child);
@@ -87,10 +89,15 @@ class _MealListScreenState extends State<MealListScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.scaffoldBg,
       body: SafeArea(
         child: Column(
           children: [
+            // Header with search - not scrollable, stays pinned
             _buildHeader(),
+            // Category chips
+            _buildCategoryChips(),
+            // Meal list content
             Expanded(
               child: BlocBuilder<MealBloc, MealState>(
                 builder: (context, state) {
@@ -103,9 +110,8 @@ class _MealListScreenState extends State<MealListScreen>
                   } else if (state is MealError) {
                     return MealErrorWidget(
                       message: state.message,
-                      onRetry: () {
-                        context.read<MealBloc>().add(const LoadDefaultMeals());
-                      },
+                      onRetry: () =>
+                          context.read<MealBloc>().add(const LoadDefaultMeals()),
                     );
                   }
                   return const ShimmerListLoading();
@@ -119,101 +125,137 @@ class _MealListScreenState extends State<MealListScreen>
   }
 
   Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+    return Container(
+      color: AppColors.cardBg,
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  gradient: AppColors.primaryGradient,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.restaurant_menu,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Discover',
-                      style:
-                          Theme.of(context).textTheme.headlineLarge?.copyWith(
-                                color: AppColors.textPrimary,
-                              ),
+                      'Discover Recipes',
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
                     Text(
-                      'What would you like to cook?',
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      'What would you like to cook today?',
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
-                ),
-              ),
-              Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: _toggleSearch,
-                  borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: _isSearchExpanded
-                          ? AppColors.primary
-                          : AppColors.primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      _isSearchExpanded
-                          ? Icons.close_rounded
-                          : Icons.search_rounded,
-                      color: _isSearchExpanded
-                          ? Colors.white
-                          : AppColors.primary,
-                    ),
-                  ),
                 ),
               ),
             ],
           ),
-          SizeTransition(
-            sizeFactor: _searchWidthAnimation,
-            axisAlignment: -1.0,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 16),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: AppColors.cardBg,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
+          const SizedBox(height: 14),
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.scaffoldBg,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.shimmerBase),
+            ),
+            child: Row(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(left: 12),
+                  child: Icon(Icons.search_rounded, size: 20, color: AppColors.textLight),
                 ),
-                child: TextField(
-                  controller: _searchController,
-                  autofocus: true,
-                  onChanged: _onSearchChanged,
-                  decoration: InputDecoration(
-                    hintText: 'Search meals...',
-                    prefixIcon: const Icon(Icons.search_rounded),
-                    suffixIcon: ValueListenableBuilder<TextEditingValue>(
-                      valueListenable: _searchController,
-                      builder: (_, value, __) {
-                        if (value.text.isEmpty) {
-                          return const SizedBox.shrink();
-                        }
-                        return IconButton(
-                          icon: const Icon(Icons.clear_rounded),
-                          onPressed: _clearSearch,
-                        );
-                      },
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    focusNode: _searchFocus,
+                    onChanged: _onSearchChanged,
+                    style: Theme.of(context).textTheme.titleMedium,
+                    decoration: const InputDecoration(
+                      hintText: 'Search for recipes, cuisines...',
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 12,
+                      ),
                     ),
                   ),
                 ),
-              ),
+                ValueListenableBuilder<TextEditingValue>(
+                  valueListenable: _searchController,
+                  builder: (_, value, __) {
+                    if (value.text.isEmpty) return const SizedBox.shrink();
+                    return IconButton(
+                      icon: const Icon(Icons.close_rounded, size: 18),
+                      onPressed: _clearSearch,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(
+                        minWidth: 40,
+                        minHeight: 40,
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 8),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryChips() {
+    return Container(
+      color: AppColors.cardBg,
+      padding: const EdgeInsets.only(bottom: 12),
+      child: SizedBox(
+        height: 36,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          itemCount: _categories.length,
+          separatorBuilder: (_, __) => const SizedBox(width: 8),
+          itemBuilder: (context, index) {
+            final isSelected = index == _selectedCategoryIndex;
+            return GestureDetector(
+              onTap: () => _onCategoryTap(index),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: isSelected ? AppColors.primary : AppColors.scaffoldBg,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(
+                    color: isSelected ? AppColors.primary : AppColors.shimmerBase,
+                  ),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  _categories[index],
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: isSelected ? Colors.white : AppColors.textSecondary,
+                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                        fontSize: 12,
+                      ),
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -225,12 +267,12 @@ class _MealListScreenState extends State<MealListScreen>
         context.read<MealBloc>().add(const LoadDefaultMeals());
       },
       child: ListView.separated(
-        padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         physics: const AlwaysScrollableScrollPhysics(
           parent: BouncingScrollPhysics(),
         ),
         itemCount: meals.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 16),
+        separatorBuilder: (_, __) => const SizedBox(height: 14),
         itemBuilder: (context, index) {
           final meal = meals[index];
           return MealCard(

@@ -14,8 +14,9 @@ class MealDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.cardBg,
       body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
+        physics: const ClampingScrollPhysics(),
         slivers: [
           _DetailAppBar(meal: meal),
           SliverToBoxAdapter(
@@ -35,20 +36,30 @@ class _DetailAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
-      expandedHeight: 320,
+      expandedHeight: 280,
       pinned: true,
       stretch: true,
       backgroundColor: AppColors.surfaceDark,
       leading: Padding(
         padding: const EdgeInsets.all(8),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.3),
-            shape: BoxShape.circle,
-          ),
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
-            onPressed: () => Navigator.pop(context),
+        child: GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 8,
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.arrow_back_rounded,
+              color: AppColors.textPrimary,
+              size: 20,
+            ),
           ),
         ),
       ),
@@ -61,12 +72,7 @@ class _DetailAppBar extends StatelessWidget {
               CachedNetworkImage(
                 imageUrl: meal.thumbnail ?? '',
                 fit: BoxFit.cover,
-                placeholder: (_, __) => Container(
-                  color: AppColors.shimmerBase,
-                  child: const Center(
-                    child: CircularProgressIndicator(color: AppColors.primary),
-                  ),
-                ),
+                placeholder: (_, __) => Container(color: AppColors.shimmerBase),
                 errorWidget: (_, __, ___) => Container(
                   color: AppColors.shimmerBase,
                   child: const Icon(Icons.broken_image, size: 48),
@@ -92,42 +98,38 @@ class _DetailBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             meal.name,
-            style: Theme.of(context)
-                .textTheme
-                .headlineMedium
-                ?.copyWith(fontWeight: FontWeight.w700),
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           _TagRow(meal: meal),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           if (meal.youtubeUrl != null && meal.youtubeUrl!.isNotEmpty) ...[
             YoutubeButton(url: meal.youtubeUrl!),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
           ],
           if (meal.ingredients.isNotEmpty) ...[
             const SectionTitle(
               title: 'Ingredients',
               icon: Icons.shopping_basket_rounded,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             IngredientListCard(ingredients: meal.ingredients),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
           ],
           if (meal.instructions != null && meal.instructions!.isNotEmpty) ...[
             const SectionTitle(
-              title: 'Instructions',
+              title: 'How to Cook',
               icon: Icons.menu_book_rounded,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             _InstructionsCard(text: meal.instructions!),
           ],
-          const SizedBox(height: 40),
         ],
       ),
     );
@@ -155,13 +157,13 @@ class _TagRow extends StatelessWidget {
           _InfoChip(
             icon: Icons.public_rounded,
             label: meal.area!,
-            color: AppColors.accent,
+            color: AppColors.green,
           ),
         if (meal.tags != null && meal.tags!.isNotEmpty)
           ...meal.tags!.split(',').map((tag) => _InfoChip(
                 icon: Icons.tag_rounded,
                 label: tag.trim(),
-                color: AppColors.accentYellow,
+                color: AppColors.starYellow,
               )),
       ],
     );
@@ -182,16 +184,15 @@ class _InfoChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: color),
+          Icon(icon, size: 13, color: color),
           const SizedBox(width: 4),
           Text(
             label,
@@ -215,23 +216,16 @@ class _InstructionsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.cardBg,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: AppColors.scaffoldBg,
+        borderRadius: BorderRadius.circular(14),
       ),
       child: Text(
         text,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              height: 1.7,
-              color: AppColors.textPrimary.withValues(alpha: 0.85),
+              height: 1.8,
+              color: AppColors.textSecondary,
             ),
       ),
     );

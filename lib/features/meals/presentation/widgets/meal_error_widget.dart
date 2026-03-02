@@ -15,7 +15,7 @@ class MealErrorWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -23,34 +23,35 @@ class MealErrorWidget extends StatelessWidget {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: AppColors.error.withValues(alpha: 0.1),
+                color: AppColors.error.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
-                Icons.error_outline_rounded,
-                size: 40,
+                Icons.wifi_off_rounded,
+                size: 36,
                 color: AppColors.error,
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
             Text(
-              'Oops! Something went wrong',
+              'Something went wrong',
               style: Theme.of(context).textTheme.headlineSmall,
-              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
               message,
               style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.center,
-              maxLines: 3,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: onRetry,
-              icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Retry'),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: 140,
+              child: ElevatedButton(
+                onPressed: onRetry,
+                child: const Text('Try Again'),
+              ),
             ),
           ],
         ),

@@ -10,34 +10,33 @@ class EmptyStateWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 100,
-              height: 100,
+              width: 90,
+              height: 90,
               decoration: BoxDecoration(
-                color: AppColors.accentYellow.withValues(alpha: 0.15),
+                color: AppColors.primary.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.restaurant_menu_rounded,
-                size: 48,
-                color: AppColors.accentYellow,
+              child: Icon(
+                Icons.no_meals_rounded,
+                size: 40,
+                color: AppColors.primary.withValues(alpha: 0.6),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
             Text(
-              query.isNotEmpty ? 'No meals found' : 'No meals available',
+              query.isNotEmpty ? 'No results found' : 'No recipes available',
               style: Theme.of(context).textTheme.headlineSmall,
-              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
               query.isNotEmpty
-                  ? 'Try searching for something else\nlike "pasta" or "chicken"'
-                  : 'Pull to refresh or try a different search',
+                  ? 'Try "chicken", "pasta", or "dessert"'
+                  : 'Pull down to refresh',
               style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
